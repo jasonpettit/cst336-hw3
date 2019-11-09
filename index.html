@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+        <meta charset="utf-8"/>
+        <title>CST 336 HW3: Your Local Weather</title>
+        
+        <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="styles.css"/>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    </head>
+    
+    <body>
+        <header><center>
+            <h1>CST 336 HW3: Your Local Weather</h1>
+            <form action="#" id="form">
+            <h2>Enter Zip: <input id="zip"></h2></form><br>
+            <h3></h3><span id="zipCodeError"></h3></span>
+        </header></center>
+        
+        <center><table>
+        <tr id="title"><td><span id="city"></span></td></tr>
+        <tr><td>Current Temp:</td><td><span id="currentTemp"></span></td><td>Fahrenheit</td></tr>
+        <tr><td>Wind Speed:</td><td><span id="windSpeed"></span><td>Miles Per Hour</td></td></tr>
+        <tr><td>Wind Direction:</td><td><span id="windDirection"></span></td><td>Degrees</td></tr>
+        </table></center>
+        
+    <script>
+        //Check for a valid zip code and give feedback
+        $("#zip").on("change", function(){
+            $.ajax({
+                method:     "GET",
+                url:        "https://cst336.herokuapp.com/projects/api/cityInfoAPI.php",
+                dataType:   "json",
+                data:       {"zip": $("#zip").val() },
+                success:    function(result,status){
+                 
+                    if(result == false){
+                        $("#zipCodeError").html("Invalid Zip Code, Please Enter A Valid Zip Code");
+                        $("#zipCodeError").css("color","red");
+                        $("#form")[0].reset();
+                    }
+                    else{
+                        $("#zipCodeError").html("Zip Code Found");
+                        $("#zipCodeError").css("color","green");
+                    }
+                }
+            });//ajax zipcode
+                
+            $.ajax({
+                method:     "GET",
+                url:        "https://api.openweathermap.org/data/2.5/weather?",
+                dataType:   "json",
+                data:       {"zip": $("#zip").val(), "units": "imperial", "appid": "9fba04539a292530875402ca73837409" },
+                success:    function(result,status){
+                    
+                    $("#city").html(result.name);
+                    $("#currentTemp").html(result.main.temp);
+                    $("#windSpeed").html(result.wind.speed);
+                    $("#windDirection").html(result.wind.deg);
+                }
+            });//ajax current weather conditions
+            
+        });//zip and weather conditions
+    </script>    
+    </body>
+</html>
+
+<!-- API KEY: 9fba04539a292530875402ca73837409 -->
